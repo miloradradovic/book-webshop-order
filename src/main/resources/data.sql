@@ -1,0 +1,2 @@
+insert into orders (address, final_price, order_status, phone_number) values ('address2', 280.0, 'CREATED', "phone2");
+insert into ordered_items (amount, name, price, order_id) values (2, 'name2', 140, 1);
