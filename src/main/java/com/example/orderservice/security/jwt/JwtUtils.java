@@ -1,10 +1,17 @@
 package com.example.orderservice.security.jwt;
 
+import com.example.orderservice.security.UserDetailsImpl;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtils {
@@ -19,7 +26,7 @@ public class JwtUtils {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e) {
             e.printStackTrace();
         }
         return false;
@@ -37,5 +44,21 @@ public class JwtUtils {
             return headerAuth.substring(7);
         }
         return null;
+    }
+
+    private List<GrantedAuthority> getAuthoritiesFromToken(String token) {
+        String role = (String) Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().get("role");
+        List<String> rolesStrings = new ArrayList<>();
+        rolesStrings.add(role);
+        return rolesStrings.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    }
+
+    public UserDetailsImpl getUserDetailsFromToken(String token) {
+        String email = getEmailFromJwtToken(token);
+        List<GrantedAuthority> authorities = getAuthoritiesFromToken(token);
+        UserDetailsImpl userDetails = new UserDetailsImpl();
+        userDetails.setUsername(email);
+        userDetails.setAuthorities(authorities);
+        return userDetails;
     }
 }

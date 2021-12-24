@@ -37,16 +37,25 @@ public class OrderService implements IOrderService {
 
     @Override
     public Order createOrder(Cart cart) {
-        if (cart.isDefaultInfo()) {
-            UserDataResponse userDataResponse = userFeign.getUserData();
-            cart.setAddress(userDataResponse.getAddress());
-            cart.setPhoneNumber(userDataResponse.getPhoneNumber());
+        try {
+            if (cart.isDefaultInfo()) {
+                UserDataResponse userDataResponse = userFeign.getUserData();
+                cart.setAddress(userDataResponse.getAddress());
+                cart.setPhoneNumber(userDataResponse.getPhoneNumber());
+            }
+        } catch (Exception e) {
+            throw new CreateOrderFailException();
         }
-        List<BookCatalogData> bookCatalogData = bookFeign.getBookData(cart.toCartClient());
+
         Set<OrderedItem> orderedItems = new HashSet<>();
-        for (BookCatalogData book : bookCatalogData) {
-            OrderedItem orderedItem = new OrderedItem(book.getName(), cart.getCartItems().get(bookCatalogData.indexOf(book)).getAmount(), book.getPrice());
-            orderedItems.add(orderedItem);
+        try {
+            List<BookCatalogData> bookCatalogData = bookFeign.getBookData(cart.toCartClient());
+            for (BookCatalogData book : bookCatalogData) {
+                OrderedItem orderedItem = new OrderedItem(book.getName(), cart.getCartItems().get(bookCatalogData.indexOf(book)).getAmount(), book.getPrice());
+                orderedItems.add(orderedItem);
+            }
+        } catch (Exception e) {
+            throw new CreateOrderFailException();
         }
 
         Order saved = orderRepository.save(new Order(orderedItems, cart.getAddress(), cart.getPhoneNumber()));
