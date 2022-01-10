@@ -36,10 +36,10 @@ public class OrderService implements IOrderService {
     BookFeign bookFeign;
 
     @Override
-    public Order createOrder(Cart cart) {
+    public Order create(Cart cart) {
         try {
             if (cart.isDefaultInfo()) {
-                UserDataResponse userDataResponse = userFeign.getUserData();
+                UserDataResponse userDataResponse = userFeign.getDataForOrder();
                 cart.setAddress(userDataResponse.getAddress());
                 cart.setPhoneNumber(userDataResponse.getPhoneNumber());
             }
@@ -49,7 +49,7 @@ public class OrderService implements IOrderService {
 
         Set<OrderedItem> orderedItems = new HashSet<>();
         try {
-            List<BookCatalogData> bookCatalogData = bookFeign.getBookData(cart.toCartClient());
+            List<BookCatalogData> bookCatalogData = bookFeign.getByCart(cart.toCartClient());
             for (BookCatalogData book : bookCatalogData) {
                 OrderedItem orderedItem = new OrderedItem(book.getName(), cart.getCartItems().get(bookCatalogData.indexOf(book)).getAmount(), book.getPrice());
                 orderedItems.add(orderedItem);
@@ -71,7 +71,7 @@ public class OrderService implements IOrderService {
     @Override
     @Scheduled(fixedRate = 20000, initialDelay = 20000)
     @Async
-    public void updateOrderStatus() {
+    public void updateStatus() {
         List<Order> orders = orderRepository.findAll();
 
         for (Order order : orders) {
@@ -90,11 +90,21 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public Order findById(int orderId) {
-        Order order = orderRepository.findById(orderId).orElse(null);
+    public Order getById(int orderId) {
+        return orderRepository.findById(orderId).orElse(null);
+    }
+
+    @Override
+    public Order getByIdThrowsException(int orderId) {
+        Order order = getById(orderId);
         if (order == null) {
             throw new OrderNotFoundException();
         }
         return order;
+    }
+
+    @Override
+    public List<Order> getAll() {
+        return orderRepository.findAll();
     }
 }

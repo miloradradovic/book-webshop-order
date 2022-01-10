@@ -1,6 +1,5 @@
 package com.example.orderservice.security.jwt;
 
-import com.example.orderservice.security.CustomUserDetailsService;
 import com.example.orderservice.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,16 +18,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtils jwtUtils;
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = jwtUtils.getToken(request);
         if (token != null && jwtUtils.validateJwtToken(token)) {
             String userEmail = jwtUtils.getEmailFromJwtToken(token);
             UserDetailsImpl userDetails = jwtUtils.getUserDetailsFromToken(token);
-            // UserDetailsImpl userDetails = customUserDetailsService.getUserDetails();
             if (userDetails.getUsername().equals(userEmail)) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
                         null, userDetails.getAuthorities());

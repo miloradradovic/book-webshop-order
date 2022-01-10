@@ -11,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/orders", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -26,16 +29,25 @@ public class OrderController {
     @Autowired
     OrderMapper orderMapper;
 
-    @PostMapping(value = "/create-order")
+    @PostMapping(value = "/create")
     @CircuitBreaker(name = "createOrderAPI")
-    public ResponseEntity<OrderDTO> createOrder(@RequestBody CartDTO cartDTO) {
-        Order created = orderService.createOrder(cartMapper.toCart(cartDTO));
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<OrderDTO> create(@RequestBody CartDTO cartDTO) {
+        Order created = orderService.create(cartMapper.toCart(cartDTO));
         return new ResponseEntity<>(orderMapper.toOrderDTO(created), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/monitor-order/{orderId}")
-    public ResponseEntity<OrderDTO> monitorOrder(@PathVariable int orderId) {
-        Order toMonitor = orderService.findById(orderId);
+    @GetMapping(value = "/{orderId}")
+    @PreAuthorize("hasRole('ROLE_USER') || hasRole('ROLE_ADMIN')")
+    public ResponseEntity<OrderDTO> getById(@PathVariable int orderId) {
+        Order toMonitor = orderService.getByIdThrowsException(orderId);
         return new ResponseEntity<>(orderMapper.toOrderDTO(toMonitor), HttpStatus.OK);
+    }
+
+    @GetMapping()
+    @PreAuthorize("hasRole('ROLE_USER') || hasRole('ROLE_ADMIN')")
+    public ResponseEntity<List<OrderDTO>> getAll() {
+        List<Order> orders = orderService.getAll();
+        return new ResponseEntity<>(orderMapper.toOrderDTOList(orders), HttpStatus.OK);
     }
 }

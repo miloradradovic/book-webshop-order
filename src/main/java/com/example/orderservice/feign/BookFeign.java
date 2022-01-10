@@ -13,8 +13,8 @@ import java.util.List;
 @FeignClient("catalog-server")
 public interface BookFeign {
 
-    @PostMapping(value = "api/books/client/get-book-data")
-    List<BookCatalogData> getBookData(@RequestBody CartClient cart);
+    @PostMapping(value = "api/books/client/get-by-cart")
+    List<BookCatalogData> getByCart(@RequestBody CartClient cart);
 
     @PutMapping(value = "api/books/client/edit-in-stock")
     void editInStock(@RequestBody EditInStock editInStock);
