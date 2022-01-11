@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -32,7 +33,7 @@ public class OrderController {
     @PostMapping(value = "/create")
     @CircuitBreaker(name = "createOrderAPI")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<OrderDTO> create(@RequestBody CartDTO cartDTO) {
+    public ResponseEntity<OrderDTO> create(@RequestBody @Valid CartDTO cartDTO) {
         Order created = orderService.create(cartMapper.toCart(cartDTO));
         return new ResponseEntity<>(orderMapper.toOrderDTO(created), HttpStatus.OK);
     }

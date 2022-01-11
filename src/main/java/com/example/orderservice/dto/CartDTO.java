@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @NoArgsConstructor
@@ -14,6 +15,7 @@ import java.util.List;
 @Setter
 public class CartDTO {
 
+    @Size(min = 1, message = "Please provide at least one cart item!")
     private List<CartItemDTO> cartItems;
 
     @NotNull(message = "Default info must be provided!")
