@@ -35,7 +35,7 @@ public class OrderController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<OrderDTO> create(@RequestBody @Valid CartDTO cartDTO) {
         Order created = orderService.create(cartMapper.toCart(cartDTO));
-        return new ResponseEntity<>(orderMapper.toOrderDTO(created), HttpStatus.OK);
+        return new ResponseEntity<>(orderMapper.toOrderDTO(created), HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/{orderId}")

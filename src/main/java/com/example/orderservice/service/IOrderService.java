@@ -8,7 +8,7 @@ import java.util.List;
 public interface IOrderService {
 
     Order create(Cart cart);
-    void updateStatus();
+    List<Order> updateStatus();
     Order getById(int orderId);
     Order getByIdThrowsException(int orderId);
     List<Order> getAll();

@@ -71,7 +71,7 @@ public class OrderService implements IOrderService {
     @Override
     @Scheduled(fixedRate = 20000, initialDelay = 20000)
     @Async
-    public void updateStatus() {
+    public List<Order> updateStatus() {
         List<Order> orders = orderRepository.findAll();
 
         for (Order order : orders) {
@@ -86,7 +86,7 @@ public class OrderService implements IOrderService {
             }
         }
 
-        orderRepository.saveAll(orders);
+        return orderRepository.saveAll(orders);
     }
 
     @Override
