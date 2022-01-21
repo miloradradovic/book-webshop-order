@@ -4,6 +4,7 @@ import com.example.orderservice.dto.CartDTO;
 import com.example.orderservice.dto.OrderDTO;
 import com.example.orderservice.mapper.CartMapper;
 import com.example.orderservice.mapper.OrderMapper;
+import com.example.orderservice.model.Cart;
 import com.example.orderservice.model.Order;
 import com.example.orderservice.service.impl.OrderService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -34,8 +35,9 @@ public class OrderController {
     @CircuitBreaker(name = "createOrderAPI")
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<OrderDTO> create(@RequestBody @Valid CartDTO cartDTO) {
-        Order created = orderService.create(cartMapper.toCart(cartDTO));
-        return new ResponseEntity<>(orderMapper.toOrderDTO(created), HttpStatus.OK);
+        Cart cart = cartMapper.toCart(cartDTO);
+        Order created = orderService.create(cart, cartMapper.toCartClient(cart), orderMapper.toOrder(cart));
+        return new ResponseEntity<>(orderMapper.toOrderDTO(created), HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/{orderId}")

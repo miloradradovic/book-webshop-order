@@ -4,6 +4,7 @@ import com.example.orderservice.feign.client.BookCatalogData;
 import com.example.orderservice.feign.client.CartClient;
 import com.example.orderservice.feign.client.EditInStock;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,5 +18,5 @@ public interface BookFeign {
     List<BookCatalogData> getByCart(@RequestBody CartClient cart);
 
     @PutMapping(value = "api/books/client/edit-in-stock")
-    void editInStock(@RequestBody EditInStock editInStock);
+    ResponseEntity<?> editInStock(@RequestBody EditInStock editInStock);
 }

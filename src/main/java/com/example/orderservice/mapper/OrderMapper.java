@@ -1,11 +1,13 @@
 package com.example.orderservice.mapper;
 
 import com.example.orderservice.dto.OrderDTO;
+import com.example.orderservice.model.Cart;
 import com.example.orderservice.model.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,5 +28,15 @@ public class OrderMapper {
             dtos.add(toOrderDTO(order));
         }
         return dtos;
+    }
+
+    public Order toOrder(Cart cart) {
+        Order order = new Order();
+        order.setOrderedItems(new HashSet<>());
+        if (!cart.isDefaultInfo()) {
+            order.setAddress(cart.getAddress());
+            order.setPhoneNumber(cart.getPhoneNumber());
+        }
+        return order;
     }
 }

@@ -1,6 +1,5 @@
 package com.example.orderservice.feign.client;
 
-import com.example.orderservice.model.CartItem;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
