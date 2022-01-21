@@ -4,6 +4,7 @@ import com.example.orderservice.dto.CartDTO;
 import com.example.orderservice.dto.CartItemDTO;
 import com.example.orderservice.dto.OrderDTO;
 import com.example.orderservice.dto.OrderedItemDTO;
+import com.example.orderservice.feign.client.CartClient;
 import com.example.orderservice.model.Cart;
 import com.example.orderservice.model.CartItem;
 import com.example.orderservice.model.Order;
@@ -143,5 +144,23 @@ public class ApiTestUtils {
             orderDTOList.add(orderDTO);
         }
         return orderDTOList;
+    }
+
+    public static CartClient generateCartClient(Cart cart) {
+        List<Integer> ids = new ArrayList<>();
+        for (CartItem cartItem : cart.getCartItems()) {
+            ids.add(cartItem.getBookId());
+        }
+        return new CartClient(ids);
+    }
+
+    public static Order generateOrderToCreate(Cart cart) {
+        Order order = new Order();
+        order.setOrderedItems(new HashSet<>());
+        if (!cart.isDefaultInfo()) {
+            order.setAddress(cart.getAddress());
+            order.setPhoneNumber(cart.getPhoneNumber());
+        }
+        return order;
     }
 }

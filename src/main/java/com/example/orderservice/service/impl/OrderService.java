@@ -5,6 +5,7 @@ import com.example.orderservice.exception.OrderNotFoundException;
 import com.example.orderservice.feign.BookFeign;
 import com.example.orderservice.feign.UserFeign;
 import com.example.orderservice.feign.client.BookCatalogData;
+import com.example.orderservice.feign.client.CartClient;
 import com.example.orderservice.feign.client.EditInStock;
 import com.example.orderservice.feign.client.UserDataResponse;
 import com.example.orderservice.model.Cart;
@@ -36,29 +37,28 @@ public class OrderService implements IOrderService {
     BookFeign bookFeign;
 
     @Override
-    public Order create(Cart cart) {
+    public Order create(Cart cart, CartClient cartClient, Order toCreate) {
         try {
             if (cart.isDefaultInfo()) {
                 UserDataResponse userDataResponse = userFeign.getDataForOrder();
-                cart.setAddress(userDataResponse.getAddress());
-                cart.setPhoneNumber(userDataResponse.getPhoneNumber());
+                toCreate.setAddress(userDataResponse.getAddress());
+                toCreate.setPhoneNumber(userDataResponse.getPhoneNumber());
             }
         } catch (Exception e) {
             throw new CreateOrderFailException();
         }
 
-        Set<OrderedItem> orderedItems = new HashSet<>();
         try {
-            List<BookCatalogData> bookCatalogData = bookFeign.getByCart(cart.toCartClient());
+            List<BookCatalogData> bookCatalogData = bookFeign.getByCart(cartClient);
             for (BookCatalogData book : bookCatalogData) {
                 OrderedItem orderedItem = new OrderedItem(book.getName(), cart.getCartItems().get(bookCatalogData.indexOf(book)).getAmount(), book.getPrice());
-                orderedItems.add(orderedItem);
+                toCreate.getOrderedItems().add(orderedItem);
             }
         } catch (Exception e) {
             throw new CreateOrderFailException();
         }
 
-        Order saved = orderRepository.save(new Order(orderedItems, cart.getAddress(), cart.getPhoneNumber()));
+        Order saved = orderRepository.save(toCreate);
         try {
             bookFeign.editInStock(new EditInStock(cart));
             return saved;
@@ -91,7 +91,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public Order getById(int orderId) {
-        return orderRepository.findById(orderId).orElse(null);
+        return orderRepository.findById(orderId);
     }
 
     @Override

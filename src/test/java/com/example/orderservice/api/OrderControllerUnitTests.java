@@ -4,6 +4,7 @@ import com.example.orderservice.dto.CartDTO;
 import com.example.orderservice.dto.OrderDTO;
 import com.example.orderservice.exception.CreateOrderFailException;
 import com.example.orderservice.exception.OrderNotFoundException;
+import com.example.orderservice.feign.client.CartClient;
 import com.example.orderservice.mapper.CartMapper;
 import com.example.orderservice.mapper.OrderMapper;
 import com.example.orderservice.model.Cart;
@@ -43,16 +44,22 @@ public class OrderControllerUnitTests {
     public void createSuccess() {
         CartDTO cartDTO = ApiTestUtils.generateCartDTO("");
         Cart cart = ApiTestUtils.generateCart(cartDTO);
+        CartClient cartClient = ApiTestUtils.generateCartClient(cart);
+        Order toCreate = ApiTestUtils.generateOrderToCreate(cart);
         Order created = ApiTestUtils.generateCreatedOrder(cart);
         OrderDTO orderDTO = ApiTestUtils.generateOrderDTO(created);
 
         when(cartMapper.toCart(cartDTO)).thenReturn(cart);
-        when(orderService.create(cart)).thenReturn(created);
+        when(cartMapper.toCartClient(cart)).thenReturn(cartClient);
+        when(orderMapper.toOrder(cart)).thenReturn(toCreate);
+        when(orderService.create(cart, cartClient, toCreate)).thenReturn(created);
         when(orderMapper.toOrderDTO(created)).thenReturn(orderDTO);
 
         ResponseEntity<OrderDTO> response = orderController.create(cartDTO);
         verify(cartMapper).toCart(cartDTO);
-        verify(orderService).create(cart);
+        verify(cartMapper).toCartClient(cart);
+        verify(orderMapper).toOrder(cart);
+        verify(orderService).create(cart, cartClient, toCreate);
         verify(orderMapper).toOrderDTO(created);
         verifyNoMoreInteractions(cartMapper, orderService, orderMapper);
         assertNotNull(response.getBody());
@@ -64,84 +71,120 @@ public class OrderControllerUnitTests {
     public void createFailUserEmail() {
         CartDTO cartDTO = ApiTestUtils.generateCartDTO("useremail");
         Cart cart = ApiTestUtils.generateCart(cartDTO);
+        CartClient cartClient = ApiTestUtils.generateCartClient(cart);
+        Order toCreate = ApiTestUtils.generateOrderToCreate(cart);
 
         when(cartMapper.toCart(cartDTO)).thenReturn(cart);
-        when(orderService.create(cart)).thenThrow(CreateOrderFailException.class);
+        when(cartMapper.toCartClient(cart)).thenReturn(cartClient);
+        when(orderMapper.toOrder(cart)).thenReturn(toCreate);
+        when(orderService.create(cart, cartClient, toCreate)).thenThrow(CreateOrderFailException.class);
 
         orderController.create(cartDTO);
         verify(cartMapper).toCart(cartDTO);
-        verify(orderService).create(cart);
-        verifyNoMoreInteractions(cartMapper, orderService);
+        verify(cartMapper).toCartClient(cart);
+        verify(orderMapper).toOrder(cart);
+        verify(orderService).create(cart, cartClient, toCreate);
+        verifyNoMoreInteractions(cartMapper, orderService, orderMapper);
     }
 
     @Test(expected = CreateOrderFailException.class)
     public void createFailUserService() { // user service not active
         CartDTO cartDTO = ApiTestUtils.generateCartDTO("userservice");
         Cart cart = ApiTestUtils.generateCart(cartDTO);
+        CartClient cartClient = ApiTestUtils.generateCartClient(cart);
+        Order toCreate = ApiTestUtils.generateOrderToCreate(cart);
 
         when(cartMapper.toCart(cartDTO)).thenReturn(cart);
-        when(orderService.create(cart)).thenThrow(CreateOrderFailException.class);
+        when(cartMapper.toCartClient(cart)).thenReturn(cartClient);
+        when(orderMapper.toOrder(cart)).thenReturn(toCreate);
+        when(orderService.create(cart, cartClient, toCreate)).thenThrow(CreateOrderFailException.class);
 
         orderController.create(cartDTO);
         verify(cartMapper).toCart(cartDTO);
-        verify(orderService).create(cart);
-        verifyNoMoreInteractions(cartMapper, orderService);
+        verify(cartMapper).toCartClient(cart);
+        verify(orderMapper).toOrder(cart);
+        verify(orderService).create(cart, cartClient, toCreate);
+        verifyNoMoreInteractions(cartMapper, orderService, orderMapper);
     }
 
     @Test(expected = CreateOrderFailException.class)
     public void createFailCart() {
         CartDTO cartDTO = ApiTestUtils.generateCartDTO("cart");
         Cart cart = ApiTestUtils.generateCart(cartDTO);
+        CartClient cartClient = ApiTestUtils.generateCartClient(cart);
+        Order toCreate = ApiTestUtils.generateOrderToCreate(cart);
 
         when(cartMapper.toCart(cartDTO)).thenReturn(cart);
-        when(orderService.create(cart)).thenThrow(CreateOrderFailException.class);
+        when(cartMapper.toCartClient(cart)).thenReturn(cartClient);
+        when(orderMapper.toOrder(cart)).thenReturn(toCreate);
+        when(orderService.create(cart, cartClient, toCreate)).thenThrow(CreateOrderFailException.class);
 
         orderController.create(cartDTO);
         verify(cartMapper).toCart(cartDTO);
-        verify(orderService).create(cart);
-        verifyNoMoreInteractions(cartMapper, orderService);
+        verify(cartMapper).toCartClient(cart);
+        verify(orderMapper).toOrder(cart);
+        verify(orderService).create(cart, cartClient, toCreate);
+        verifyNoMoreInteractions(cartMapper, orderService, orderMapper);
     }
 
     @Test(expected = CreateOrderFailException.class)
     public void createFailCatalogService() {
         CartDTO cartDTO = ApiTestUtils.generateCartDTO("catalogservice");
         Cart cart = ApiTestUtils.generateCart(cartDTO);
+        CartClient cartClient = ApiTestUtils.generateCartClient(cart);
+        Order toCreate = ApiTestUtils.generateOrderToCreate(cart);
 
         when(cartMapper.toCart(cartDTO)).thenReturn(cart);
-        when(orderService.create(cart)).thenThrow(CreateOrderFailException.class);
+        when(cartMapper.toCartClient(cart)).thenReturn(cartClient);
+        when(orderMapper.toOrder(cart)).thenReturn(toCreate);
+        when(orderService.create(cart, cartClient, toCreate)).thenThrow(CreateOrderFailException.class);
 
         orderController.create(cartDTO);
         verify(cartMapper).toCart(cartDTO);
-        verify(orderService).create(cart);
-        verifyNoMoreInteractions(cartMapper, orderService);
+        verify(cartMapper).toCartClient(cart);
+        verify(orderMapper).toOrder(cart);
+        verify(orderService).create(cart, cartClient, toCreate);
+        verifyNoMoreInteractions(cartMapper, orderService, orderMapper);
     }
 
     @Test(expected = CreateOrderFailException.class)
     public void createFailEditInStockId() {
         CartDTO cartDTO = ApiTestUtils.generateCartDTO("editinstockid");
         Cart cart = ApiTestUtils.generateCart(cartDTO);
+        CartClient cartClient = ApiTestUtils.generateCartClient(cart);
+        Order toCreate = ApiTestUtils.generateOrderToCreate(cart);
 
         when(cartMapper.toCart(cartDTO)).thenReturn(cart);
-        when(orderService.create(cart)).thenThrow(CreateOrderFailException.class);
+        when(cartMapper.toCartClient(cart)).thenReturn(cartClient);
+        when(orderMapper.toOrder(cart)).thenReturn(toCreate);
+        when(orderService.create(cart, cartClient, toCreate)).thenThrow(CreateOrderFailException.class);
 
         orderController.create(cartDTO);
         verify(cartMapper).toCart(cartDTO);
-        verify(orderService).create(cart);
-        verifyNoMoreInteractions(cartMapper, orderService);
+        verify(cartMapper).toCartClient(cart);
+        verify(orderMapper).toOrder(cart);
+        verify(orderService).create(cart, cartClient, toCreate);
+        verifyNoMoreInteractions(cartMapper, orderService, orderMapper);
     }
 
     @Test(expected = CreateOrderFailException.class)
     public void createFailEditInStockAmount() {
         CartDTO cartDTO = ApiTestUtils.generateCartDTO("editinstockamount");
         Cart cart = ApiTestUtils.generateCart(cartDTO);
+        CartClient cartClient = ApiTestUtils.generateCartClient(cart);
+        Order toCreate = ApiTestUtils.generateOrderToCreate(cart);
 
         when(cartMapper.toCart(cartDTO)).thenReturn(cart);
-        when(orderService.create(cart)).thenThrow(CreateOrderFailException.class);
+        when(cartMapper.toCartClient(cart)).thenReturn(cartClient);
+        when(orderMapper.toOrder(cart)).thenReturn(toCreate);
+        when(orderService.create(cart, cartClient, toCreate)).thenThrow(CreateOrderFailException.class);
 
         orderController.create(cartDTO);
         verify(cartMapper).toCart(cartDTO);
-        verify(orderService).create(cart);
-        verifyNoMoreInteractions(cartMapper, orderService);
+        verify(cartMapper).toCartClient(cart);
+        verify(orderMapper).toOrder(cart);
+        verify(orderService).create(cart, cartClient, toCreate);
+        verifyNoMoreInteractions(cartMapper, orderService, orderMapper);
     }
 
     @Test
