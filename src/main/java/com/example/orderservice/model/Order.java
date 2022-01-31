@@ -45,8 +45,6 @@ public class Order {
         this.finalPrice = calculateFinalPrice();
     }
 
-
-
     private double calculateFinalPrice() {
         double price = 0.0;
         for (OrderedItem item : orderedItems) {
@@ -54,6 +52,4 @@ public class Order {
         }
         return price;
     }
-
-
 }

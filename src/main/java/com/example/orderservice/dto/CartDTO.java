@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -22,4 +23,7 @@ public class CartDTO {
     private boolean defaultInfo; // if true then use address and phone number of currently logged-in user
     private String address;
     private String phoneNumber;
+
+    @NotNull(message = "Final price must be provided!")
+    private double finalPrice;
 }

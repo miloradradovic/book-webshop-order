@@ -19,10 +19,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 @Service
 public class OrderService implements IOrderService {
@@ -35,6 +35,12 @@ public class OrderService implements IOrderService {
 
     @Autowired
     BookFeign bookFeign;
+
+    private final Random random;
+
+    public OrderService() throws NoSuchAlgorithmException {
+        random = SecureRandom.getInstanceStrong(); // SecureRandom is preferred to Random
+    }
 
     @Override
     public Order create(Cart cart, CartClient cartClient, Order toCreate) {
@@ -77,7 +83,6 @@ public class OrderService implements IOrderService {
         for (Order order : orders) {
             if (order.getOrderStatus() == OrderStatus.CREATED) {
                 String[] options = {"ACCEPTED", "NOT_ACCEPTED"};
-                Random random = new Random();
                 order.setOrderStatus(OrderStatus.valueOf(options[random.nextInt(2)])); // sets it to accepted or not accepted randomly
             } else if (order.getOrderStatus() == OrderStatus.ACCEPTED) {
                 order.setOrderStatus(OrderStatus.SENT);

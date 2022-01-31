@@ -18,9 +18,9 @@ public class CartMapper {
 
     public Cart toCart(CartDTO dto) {
         if (dto.isDefaultInfo()) {
-            return new Cart(cartItemMapper.toCartItemList(dto.getCartItems()));
+            return new Cart(cartItemMapper.toCartItemList(dto.getCartItems()), dto.getFinalPrice());
         }
-        return new Cart(cartItemMapper.toCartItemList(dto.getCartItems()), dto.getAddress(), dto.getPhoneNumber());
+        return new Cart(cartItemMapper.toCartItemList(dto.getCartItems()), dto.getAddress(), dto.getPhoneNumber(), dto.getFinalPrice());
     }
 
     public CartClient toCartClient(Cart cart) {

@@ -70,7 +70,7 @@ public class ApiTestUtils {
         CartItem cartItem = new CartItem(cartDTO.getCartItems().get(0).getBookId(), cartDTO.getCartItems().get(0).getAmount());
         List<CartItem> cartItems = new ArrayList<>();
         cartItems.add(cartItem);
-        return new Cart(cartItems, cartDTO.isDefaultInfo(), cartDTO.getAddress(), cartDTO.getPhoneNumber());
+        return new Cart(cartItems, cartDTO.isDefaultInfo(), cartDTO.getAddress(), cartDTO.getPhoneNumber(), cartDTO.getFinalPrice());
     }
 
     public static Order generateCreatedOrder(Cart cart) {

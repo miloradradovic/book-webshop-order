@@ -1,12 +1,10 @@
 package com.example.orderservice.model;
 
-import com.example.orderservice.feign.client.CartClient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -19,24 +17,19 @@ public class Cart {
     private boolean defaultInfo; // if true then use address and phone number of currently logged-in user
     private String address;
     private String phoneNumber;
+    private double finalPrice;
 
-    public Cart(List<CartItem> toCartItemList) {
+    public Cart(List<CartItem> toCartItemList, double finalPrice) {
         this.cartItems = toCartItemList;
         this.defaultInfo = true;
+        this.finalPrice = finalPrice;
     }
 
-    public Cart(List<CartItem> toCartItemList, String address, String phoneNumber) {
+    public Cart(List<CartItem> toCartItemList, String address, String phoneNumber, double finalPrice) {
         this.cartItems = toCartItemList;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.defaultInfo = false;
-    }
-
-    public CartClient toCartClient() {
-        List<Integer> ids = new ArrayList<>();
-        for (CartItem cartItem : cartItems) {
-            ids.add(cartItem.getBookId());
-        }
-        return new CartClient(ids);
+        this.finalPrice = finalPrice;
     }
 }
