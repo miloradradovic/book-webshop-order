@@ -1,7 +1,6 @@
 package com.example.orderservice.security.jwt;
 
 import com.example.orderservice.security.UserDetailsImpl;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,10 +25,9 @@ public class JwtUtils {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
-        } catch (ExpiredJwtException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            return false;
         }
-        return false;
     }
 
     public String getEmailFromJwtToken(String token) {

@@ -12,4 +12,5 @@ public class ExceptionManager {
     public ResponseEntity<String> handleException(BadRequestException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
 }
